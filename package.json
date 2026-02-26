@@ -23,8 +23,7 @@
     "lint:fix": "n8n-node lint --fix",
     "release": "n8n-node release",
     "test": "vitest run",
-    "test:watch": "vitest",
-    "prepublishOnly": "n8n-node prerelease"
+    "test:watch": "vitest"
   },
   "publishConfig": {
     "access": "public",
