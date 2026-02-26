@@ -1,6 +1,6 @@
 {
   "name": "n8n-nodes-zenchef",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Custom N8N Node to contact Zenchef's API",
   "license": "MIT",
   "homepage": "",
