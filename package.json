@@ -51,5 +51,18 @@
   },
   "peerDependencies": {
     "n8n-workflow": "*"
+  },
+  "release-it": {
+    "git": {
+      "commit": true,
+      "tag": true,
+      "tagName": "v${version}"
+    },
+    "npm": {
+      "publish": false
+    },
+    "github": {
+      "release": true
+    }
   }
 }

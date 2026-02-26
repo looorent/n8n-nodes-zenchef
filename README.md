@@ -134,14 +134,8 @@ This package is published to npm with [provenance statements](https://docs.npmjs
 
 Provenance is generated automatically by the `publish.yml` workflow. To publish a new version:
 
-1. Update the version in `package.json`.
-2. Commit and push to `main`.
-3. Create and push a version tag:
-   ```sh
-   git tag v0.1.0
-   git push --tags
-   ```
-4. The GitHub Actions workflow will lint, build, and publish the package to npm with a signed provenance attestation.
+1. Run locally `npm release`, this will use `release-it` to update the version, generate the changelog and push a tag. Pushing a tag triggers a Github Actions workflow.
+2. The GitHub Actions workflow will lint, build, and publish the package to npm with a signed provenance attestation.
 
 ### Prerequisites
 
