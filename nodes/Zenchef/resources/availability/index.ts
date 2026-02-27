@@ -33,6 +33,27 @@ const restaurantId: INodeProperties = {
   },
 }
 
+const options: INodeProperties = {
+  displayName: 'Options',
+  name: 'options',
+  type: 'collection',
+  placeholder: 'Add Option',
+  default: {},
+  options: [
+    {
+      displayName: 'Number of Guests',
+      name: 'numberOfGuests',
+      type: 'number',
+      default: 0,
+      description: 'When set, only return shifts that accept this party size. Leave at 0 to skip filtering.',
+      typeOptions: {
+        minValue: 0,
+      },
+    },
+  ],
+}
+
+
 const operation: INodeProperties = {
   displayName: 'Operation',
   name: 'operation',
@@ -78,4 +99,5 @@ export const availability: INodeProperties[] = [
   ...findForDay,
   ...findForMonth,
   ...findForUpcomingDays,
+  options,
 ]

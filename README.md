@@ -80,7 +80,8 @@ The node applies the following filters before producing items:
 
 1. **Closed days** are excluded — only days with `isOpen === true` and a valid `shifts` array are kept.
 2. **Unavailable shifts** are excluded — a shift must have `closed !== true` and at least one entry in `possible_guests`.
-3. Each remaining shift becomes its own output item.
+3. **Number of Guests** (optional) — when set via **Options > Number of Guests**, only shifts whose `possible_guests` list includes that exact party size are kept.
+4. Each remaining shift becomes its own output item.
 
 If no shifts pass these filters, the node throws a "No availability data returned" error.
 
@@ -114,9 +115,8 @@ Every Zenchef restaurant has a numeric ID. To find it:
 - Slack / Email: Notify with `{{ $json.schedule.date }}` and `{{ $json.name }}`
 
 **Check availability for a party size** — Find out which dates can seat 6 guests:
-- Zenchef: **Find for Date Range**, From = `2026-03-15`, To = `2026-03-22`
-- IF: `{{ $json.guestCapacity.max >= 6 }}`
-- The matching items give you the dates and shifts that accept that party size
+- Zenchef: **Find for Date Range**, From = `2026-03-15`, To = `2026-03-22`, Options > Number of Guests = `6`
+- The node only outputs shifts that accept exactly 6 guests — no extra filtering needed
 
 **Monthly calendar overview** — Fetch the full month to build a calendar view:
 - Zenchef: **Find for Month**, Year = `2026`, Month = `March`

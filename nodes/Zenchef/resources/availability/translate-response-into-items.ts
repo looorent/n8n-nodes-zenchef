@@ -12,10 +12,15 @@ export async function translateResponseIntoItems(
   }
 
   const days: DayAvailability[] = Array.isArray(body[0]) ? body[0] : body
+  const options = this.getNodeParameter('options', {}) as { numberOfGuests?: number }
+  const numberOfGuests = options.numberOfGuests ?? 0
+
+  const matchesGuestCount = (shift: Shift): boolean =>
+    numberOfGuests <= 0 || (shift.possible_guests ?? []).includes(numberOfGuests)
 
   const result = days
     .filter(day => day.isOpen === true && Array.isArray(day.shifts))
-    .map(day => ({ ...day, shifts: (day.shifts || []).filter(hasAvailabilities) }))
+    .map(day => ({ ...day, shifts: (day.shifts || []).filter(hasAvailabilities).filter(matchesGuestCount) }))
     .flatMap(flattenDayToShiftItems)
 
   return this.helpers.returnJsonArray(result)

@@ -298,6 +298,69 @@ describe('translateResponseIntoItems', () => {
     })
   })
 
+  describe('numberOfGuests post-filtering', () => {
+    const twoShiftDay = [
+      {
+        date: '2026-05-02',
+        isOpen: true,
+        shifts: [
+          { id: 1001, name: 'Lunch', possible_guests: [1, 2, 3, 4, 5, 6], closed: false },
+          { id: 1002, name: 'Diner', possible_guests: [2, 4], closed: false },
+        ],
+      },
+    ]
+
+    it('returns all shifts when numberOfGuests is 0 (disabled)', async () => {
+      const result = await callWith(twoShiftDay, { options: { numberOfGuests: 0 } })
+      expect(result).toHaveLength(2)
+    })
+
+    it('returns all shifts when options is not set', async () => {
+      const result = await callWith(twoShiftDay)
+      expect(result).toHaveLength(2)
+    })
+
+    it('keeps only shifts that include the requested guest count', async () => {
+      const result = await callWith(twoShiftDay, { options: { numberOfGuests: 5 } })
+      expect(result).toHaveLength(1)
+      expect(result[0].json).toMatchObject({ name: 'Lunch' })
+    })
+
+    it('keeps all shifts when both support the guest count', async () => {
+      const result = await callWith(twoShiftDay, { options: { numberOfGuests: 2 } })
+      expect(result).toHaveLength(2)
+    })
+
+    it('returns empty when no shift supports the guest count', async () => {
+      const result = await callWith(twoShiftDay, { options: { numberOfGuests: 10 } })
+      expect(result).toEqual([])
+    })
+
+    it('filters across multiple days', async () => {
+      const multipleDays = [
+        {
+          date: '2026-05-02',
+          isOpen: true,
+          shifts: [
+            { id: 1001, name: 'Lunch', possible_guests: [1, 2, 3], closed: false },
+          ],
+        },
+        {
+          date: '2026-05-03',
+          isOpen: true,
+          shifts: [
+            { id: 2001, name: 'Brunch', possible_guests: [2, 4, 6, 8], closed: false },
+            { id: 1002, name: 'Diner', possible_guests: [1, 2, 3, 4, 5, 6, 7, 8], closed: false },
+          ],
+        },
+      ]
+      const result = await callWith(multipleDays, { options: { numberOfGuests: 8 } })
+      expect(result).toHaveLength(2)
+      expect(result[0].json).toMatchObject({ schedule: { date: '2026-05-03' }, name: 'Brunch' })
+      expect(result[1].json).toMatchObject({ schedule: { date: '2026-05-03' }, name: 'Diner' })
+    })
+  })
+
   describe('day of week computation', () => {
     it('computes Saturday correctly (2026-05-02)', async () => {
       const result = await callWith([
@@ -477,7 +540,7 @@ describe('translateResponseIntoItems', () => {
   })
 })
 
-function createContext(): IExecuteSingleFunctions {
+function createContext(params: Record<string, unknown> = {}): IExecuteSingleFunctions {
   return {
     getNode: () => ({
       id: 'mock',
@@ -487,6 +550,8 @@ function createContext(): IExecuteSingleFunctions {
       position: [0, 0],
       parameters: {},
     }),
+    getNodeParameter: (name: string, fallback: unknown) =>
+      params[name] ?? fallback,
     helpers: {
       returnJsonArray: (data: unknown[]) =>
         data.map(item => ({ json: item })) as INodeExecutionData[],
@@ -502,9 +567,9 @@ function createResponse(body: IN8nHttpResponse): IN8nHttpFullResponse {
   }
 }
 
-async function callWith(body: unknown): Promise<INodeExecutionData[]> {
+async function callWith(body: unknown, params: Record<string, unknown> = {}): Promise<INodeExecutionData[]> {
   return translateResponseIntoItems.call(
-    createContext(),
+    createContext(params),
     [],
     createResponse(body as IN8nHttpResponse),
   )
