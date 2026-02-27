@@ -126,7 +126,11 @@ Every Zenchef restaurant has a numeric ID. To find it:
 - Zenchef: any operation
 - IF: `{{ $json.name === "Dinner" }}`
 
-**AI agent tool** — This node is marked as **usable as a tool**, so an n8n AI agent can call it to answer questions like "Is restaurant X available next Saturday?"
+**AI agent tool** — This node is marked as **usable as a tool** with a rich LLM-optimized description, so an n8n AI agent can call it to answer questions like "Is restaurant X available next Saturday?". To use it:
+1. Open the **AI Agent** node and click **+ Tool**.
+2. Search for **Zenchef** in the tool picker (it appears under the AI > Tools subcategory).
+3. Configure the **Restaurant ID** — the agent will fill in dates and operations automatically based on the user's question.
+No extra prompt engineering is needed; the tool description tells the LLM about every parameter, operation, and output field.
 
 ## Publishing
 
